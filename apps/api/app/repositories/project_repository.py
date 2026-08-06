@@ -15,9 +15,9 @@ class ProjectRepository:
         """Initialize repository with database session."""
         self.session = session
 
-    async def create(self, title: str) -> Project:
+    async def create(self, title: str, youtube_url: str | None = None) -> Project:
         """Create a new project."""
-        project = Project(title=title)
+        project = Project(title=title, youtube_url=youtube_url)
         self.session.add(project)
         await self.session.flush()
         await self.session.refresh(project)
@@ -37,7 +37,13 @@ class ProjectRepository:
         )
         return list(result.scalars().all())
 
-    async def update(self, project_id: uuid.UUID, title: str | None, status: str | None) -> Project | None:
+    async def update(
+        self,
+        project_id: uuid.UUID,
+        title: str | None,
+        status: str | None,
+        youtube_url: str | None = None,
+    ) -> Project | None:
         """Update a project."""
         project = await self.get_by_id(project_id)
         if not project:
@@ -46,6 +52,8 @@ class ProjectRepository:
             project.title = title
         if status is not None:
             project.status = status
+        if youtube_url is not None:
+            project.youtube_url = youtube_url
         await self.session.flush()
         await self.session.refresh(project)
         return project
