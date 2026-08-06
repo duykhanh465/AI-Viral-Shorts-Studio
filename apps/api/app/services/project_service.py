@@ -18,7 +18,7 @@ class ProjectService:
 
     async def create_project(self, data: ProjectCreate) -> ProjectResponse:
         """Create a new project."""
-        project = await self.repository.create(data.title)
+        project = await self.repository.create(data.title, data.youtube_url)
         return ProjectResponse.model_validate(project)
 
     async def get_project(self, project_id: uuid.UUID) -> ProjectResponse | None:
@@ -39,6 +39,7 @@ class ProjectService:
             project_id,
             title=data.title,
             status=data.status,
+            youtube_url=data.youtube_url,
         )
         if not project:
             return None
